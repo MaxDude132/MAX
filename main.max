@@ -146,3 +146,15 @@ for item in container {
 if some_value {
     -- do something
 }
+
+-*
+    Operators are:
+        - == equals -> Returns a bool
+        - + plus -> Returns an int, float or string
+        - - minus -> Returns an in or float
+        - / divide -> Returns a float
+        - // int divide -> Returns an int
+        - and 
+        - or
+        - xor
+*-
