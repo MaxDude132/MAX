@@ -1,0 +1,68 @@
+-- These are comments, SQL style
+
+-*
+    This is a multiline comment
+
+    MAX is based on the idea that it is strongly typed, but type params should be used as little as possible. Everything should be clear,
+    while using as little keywords as possible. No keywords exist for function, class or variable, only types, builtins and some required keywords will be reserved.
+    Even builtins should be kept to a minimum.
+
+    MAX code should be elegant, simple and minimal in terms of keywords. 
+
+    All variables have to be in snake_case, functions and methods are in camelCase, classes are in PascalCase.
+    This will be enforced by the compiler.
+*-
+
+some_value = 0  -- This is fine because it can infer the type
+int some_typed_value = 0  -- You can also be more precise
+
+someFunction (  -- functions are defined by the parentheses, not a keyword
+    return 'some_value'
+)
+
+someFunctionWithParams: int param_1, string param_2 (  -- function params must be typed. The function can be typed, but the type will be inferred where possible. If inferring is impossible, it will give a TypeError
+    return 'some_value'
+)
+
+
+GreatClass {  -- A class is defined by the brackets used
+    int some_value  -- This defines a value that the class will have. This value HAS to be given when the object is instantiated.
+    int some_value_with_default = 0  -- This value has a default, and so it is not required to be passed at object instantiation.
+    shared int class_variable = 0  -- This is a shared variable. This means that all instances of the class will use the same variable.
+    -- Note that shared attributes and methods CANNOT be accessed directly through the instance, but the cls attribute is available on the instance.
+
+    instanceMethod (
+        return me.some_value  -- me gives access to the current instance of the class. If it is used in the method, the method can only be called from an instance.
+    )
+
+    classMethod (
+        return cls.class_variable  -- cls gives access to the current class and the shared attributes and methods.
+    )
+
+    _restrictedMethod (  -- Method names that start with _ will be hidden from outside the class, but available to subclasses
+        return ''
+    )
+
+    __privateMethod (  -- Method names that start with __ will be hidden from outside the class, including to subclasses. They will still be available through an unnamed next call.
+        return ''
+    )
+
+    _some_value = 'test' -- The same logic applies to the class attributes. Note that these are then required to have a default value, as they will not appear in the initialization of the variable.
+}
+
+
+ClassThatInherits: GreatClass {
+    classMethod (
+        return next.classMethod()  -- next will always call the next parent's method. Note that this is similar to super in python, but some differences might exist.
+        -- Note that simply calling next will automatically call the method of the same name.
+    )
+}
+
+
+-- Importing should be as simple as possible and take as little space as possible. It will look like this:
+file.path -> imported_function
+-- A name alias can be given like so:
+file.path -> imported_function -> my_func
+-- Multiple functions and classes can be imported in the same line:
+file.path -> imported_function -> my_func, ImportedClass
+
