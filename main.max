@@ -162,3 +162,16 @@ if some_value {
 -- Note: Since we do not allow passing None (or null), and to avoid people making a single Sentinel that they then use everywhere (which would defeat the purpose), 
 --     we have to allow overloading functions. We should do it in a similar way to C: same function name with different parameter signature should be an overload of
 --     the previous function (or method). This has the advantage of _forcing_ the coder to split things in smaller functions to avoid repeating themselves. It's a win-win.
+
+-*
+    An idea I have is to make async be part of the core of the language. For example, a for loop that does not modify any variable outside of the loop
+        would run all iterations of the loop asynchronously. Similarly, function calls that do not depend on common variables would not await each other before running.
+        This makes it easy to take advantage of asynchronous patterns, but means that populating a list would have 2 potential behaviour (for me to determine):
+            - Because we mutate some state outside the loop, then it is not run asynchronously. In that case, there should be a way to force the async behaviour.
+                This might be preferable, as it does not depend on the underlying container to properly implement an async method. It has the advantage of easily
+                working with all code without any boilerplate needed.
+            - Because we are not modifying the variable, but rather working on its internal structure, we still move in an async manner. This makes it potentially 
+                very easy to shoot yourself in the foot. We could have a special use case for containers specifically, that says that using a function defined with an async
+                parameter means that even if called in a context that would make it sync, it will still be used as async. As such, calling `append` would result in a sync
+                context, but calling `append_async` would result in staying in the async context, with all its pros and cons.
+*-
