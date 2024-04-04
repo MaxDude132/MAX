@@ -179,20 +179,20 @@ if some_value {
 *-
 
 result = array[]
-for item in container:  -- Here, because the append is called in the loop, each iteration will be done synchronously.
+for item in container {  -- Here, because the append is called in the loop, each iteration will be done synchronously.
     val1 = item.val1
     val2 = item.val2  -- This attribute call will be done at the same time as the previous line, because they do not depend on one another (assuming one does not use the other in get_valx)
     val3 = val1 + val2  -- This line will await both val1 and val2, because those are its dependencies
     array.append(val3)  -- This line will await val3
-
--- This means that there will be only 2 threads running at the same time here. However, doing something like:
+}
 
 result = array[]
-for item in container:  -- Here, because the append is called with the async parameter, each iteration of the loop will be done in its own thread (not clear yet how it will be done)
+for item in container {  -- Here, because the append is called with the async parameter, each iteration of the loop will be done in its own thread (not clear yet how it will be done)
     val1 = item.val1
     val2 = item.val2  -- This attribute call will be done at the same time as the previous line, because they do not depend on one another (assuming one does not use the other in get_valx)
     val3 = val1 + val2  -- This line will await both val1 and val2, because those are its dependencies
     async array.append(val3)  -- This line will await val3
+}
 
 -- This means that there will be x * 2 threads at the same time, where x is the number of items in the container that is being iterated.
 -- To make sure this is safe and does not hog too much memory, we should test this idea profoundly. There also needs to be a way to limit the number of threads, with a default that fits
