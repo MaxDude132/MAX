@@ -197,3 +197,4 @@ for item in container:  -- Here, because the append is called with the async par
 -- This means that there will be x * 2 threads at the same time, where x is the number of items in the container that is being iterated.
 -- To make sure this is safe and does not hog too much memory, we should test this idea profoundly. There also needs to be a way to limit the number of threads, with a default that fits
 --    the machine the code is run on. Let's also make sure that all this threading is not heavier than just running the code synchronously, in which case it should be avoided.
+-- IMPORTANT: async will not be in version 1, but it's an idea to keep in mind for future improvements.
