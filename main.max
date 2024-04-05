@@ -13,7 +13,7 @@
     Variables in CAPS will be made to be constants. Trying to change them after the fact will cause a ValueError.
     This will be enforced by the compiler.
 
-    null does not exist in this language. If you do not know what you need yet, set a default value.
+    null does not exist in this language. If you do not know what you need yet, set a default value. Better yet, don't set anything you don't know yet.
 *-
 
 some_value = 0  -- This is fine because it can infer the type
