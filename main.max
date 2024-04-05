@@ -200,3 +200,4 @@ for item in container {  -- Here, because the append is called with the async pa
 -- To make sure this is safe and does not hog too much memory, we should test this idea profoundly. There also needs to be a way to limit the number of threads, with a default that fits
 --    the machine the code is run on. Let's also make sure that all this threading is not heavier than just running the code synchronously, in which case it should be avoided.
 -- IMPORTANT: async will not be in version 1, but it's an idea to keep in mind for future improvements.
+-- async loops should keep the order, so lines should be run in the same order every time. This will ensure that we keep the order as it would be expected if it was sync.
