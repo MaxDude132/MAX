@@ -22,16 +22,16 @@ int some_typed_value = 0  -- You can also be more precise
 some_value = 0.0  -- Type becomes int | float
 some_typed_value = 0.0  -- TypeError, float is not compatible with int
 
-fun someFunction {  -- functions are defined by the `fun` keyword
+someFunction {  -- functions are defined without any keyword
     return 'some_value'
 }
 
-fun someFunctionWithParams: int param_1, string param_2 {  -- function params must be typed. The function can be typed, but the type will be inferred where possible. If inferring is impossible, it will give a TypeError
+someFunctionWithParams: int param_1, string param_2 {  -- function params must be typed. The function can be typed, but the type will be inferred where possible. If inferring is impossible, it will give a TypeError
     return param_1
 }
 
 
-fun someFunc: int param_1 {
+someFunc: int param_1 {
     return param_1 // 2
 }
 
@@ -41,37 +41,37 @@ class GreatClass {  -- A class is defined by the class keyword
     int some_value_with_default = 0  -- This value has a default, and so it is not required to be passed at object instantiation.
     shared int class_variable = 0  -- This is a shared variable. This means that all instances of the class will use the same variable.
 
-    fun getSomeValue (
+    getSomeValue {
         return me.some_value * 2
-    )
+    }
 
-    fun instanceMethod (
+    instanceMethod {
         return me.some_value  -- me gives access to the current instance of the class.
-    )
+    }
 
-    shared fun classMethod (
+    shared fun classMethod {
         return cls.class_variable  -- cls gives access to the current class and the shared attributes and methods.
-    )
+    }
 
-    fun _restrictedMethod (  -- Method names that start with _ will be hidden from outside the class, but available to subclasses
+    _restrictedMethod {  -- Method names that start with _ will be hidden from outside the class, but available to subclasses
         return ''
-    )
+    }
 
-    fun __privateMethod (  -- Method names that start with __ will be hidden from outside the class, including to subclasses. They will still be available through an unnamed next call.
+    __privateMethod {  -- Method names that start with __ will be hidden from outside the class, including to subclasses. They will still be available through an unnamed next call.
         return ''
-    )
+    }
 
     _some_value = 'test' -- The same logic applies to the instance attributes. Note that these are required to have a default value, as they will not appear in the initialization of the variable.
 }
 
 
 ClassThatInherits: GreatClass {
-    fun classMethod (
+    classMethod {
         return next.classMethod()  -- next will always call the next parent's method. Note that this is similar to super in python, but some differences might exist.
         -- Note that simply calling next will automatically call the method of the same name. So:
         return next()
         -- would be equivalent
-    )
+    }
 }  -- Note that multiple inheritance is not allowed. It might be added eventually, but that will complicate the next call.
 
 
@@ -132,9 +132,9 @@ file.path -> imported_function => my_func, ImportedClass
 Container {
     array<int> my_array
 
-    iterate (
+    iterate {
         return iterate[me.my_array]
-    )
+    }
 }
 
 container = Container[array[1, 2, 3]]
