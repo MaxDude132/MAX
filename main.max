@@ -42,11 +42,11 @@ class GreatClass {  -- A class is defined by the class keyword
     shared int class_variable = 0  -- This is a shared variable. This means that all instances of the class will use the same variable.
 
     getSomeValue {
-        return me.some_value * 2
+        return self.some_value * 2
     }
 
     instanceMethod {
-        return me.some_value  -- me gives access to the current instance of the class.
+        return self.some_value  -- me gives access to the current instance of the class.
     }
 
     shared fun classMethod {
@@ -67,9 +67,9 @@ class GreatClass {  -- A class is defined by the class keyword
 
 ClassThatInherits: GreatClass {
     classMethod {
-        return next.classMethod()  -- next will always call the next parent's method. Note that this is similar to super in python, but some differences might exist.
-        -- Note that simply calling next will automatically call the method of the same name. So:
-        return next()
+        return super.classMethod()  -- super will always call the next parent's method. Note that this is similar to super in python, but some differences might exist.
+        -- Note that simply calling super will automatically call the method of the same name. So:
+        return super()
         -- would be equivalent
     }
 }  -- Note that multiple inheritance is not allowed. It might be added eventually, but that will complicate the next call.
@@ -133,11 +133,11 @@ Container {
     array<int> my_array
 
     iterate {
-        return iterate[me.my_array]
+        return iterate(self.my_array)
     }
 }
 
-container = Container[array[1, 2, 3]]
+container = Container(array(1, 2, 3))
 
 for item in container {
     -- do something
@@ -180,7 +180,7 @@ if some_value {
     This can be visualized in this bit of code:
 *-
 
-result = array[]
+result = array()
 for item in container {  -- Here, because the append is called in the loop, each iteration will be done synchronously.
     val1 = item.val1
     val2 = item.val2  -- This attribute call will be done at the same time as the previous line, because they do not depend on one another (assuming one does not use the other in get_valx)
