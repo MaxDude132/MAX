@@ -49,7 +49,7 @@ class GreatClass {  -- A class is defined by the class keyword
         return self.some_value  -- me gives access to the current instance of the class.
     }
 
-    shared fun classMethod {
+    shared classMethod {
         return cls.class_variable  -- cls gives access to the current class and the shared attributes and methods.
     }
 
