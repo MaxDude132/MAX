@@ -97,14 +97,20 @@ file.path -> imported_function => my_func, ImportedClass
         float: floating point numbers
         string: multiple characters
         boolean: true or false
-        array: immutable sequence of items, doubly linked
-        list: mutable sequence of items, doubly linked
+        list: immutable sequence of items, doubly linked
+        map: immutable mapping of items
+
+        All builtins are immutable and simply return a copy when you edit them.
+            This copy should be memory efficient and fast.
+            The caviat to this is that calling methods like append and insert
+                will automatically change the local variable. This will not affect
+                variables outside the current local scope (needs to be thought about more).
 *-
 
 -*
     Builtin functions
-        iterate: yields items from a container one by oen by calling the ITERATE method
-        
+        iterate: Returns the object on which to call next to get the next item
+        next: Returns the next item. If no item can be found, returns the sentinel NO_ITEMS, which signals to stop the loop.
 *-
 
 *- 
@@ -119,10 +125,15 @@ file.path -> imported_function => my_func, ImportedClass
 
         To make a container object:
             - iterate
+            - next (Only required if iterate returns self)
 
         To make comparable:
             - equals
             - greaterThan
+
+        To make a context manager:
+            - enter
+            - exit
 *-
 
 -- ITERATING
