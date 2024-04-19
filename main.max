@@ -172,6 +172,19 @@ if some_value {
         - xor
 *-
 
+-- CONTEXT MANAGERS
+
+context MyContext(): context_obj {
+    -- context_obj is available here
+}
+
+-- ENUMS
+
+enum MyEnum {
+    SOME_VALUE,
+    SOME_OTHER_VALUE,
+}
+
 -- Note: Since we do not allow passing None (or null), and to avoid people making a single Sentinel that they then use everywhere (which would defeat the purpose), 
 --     we have to allow overloading functions. We should do it in a similar way to C: same function name with different parameter signature should be an overload of
 --     the previous function (or method). This has the advantage of _forcing_ the coder to split things in smaller functions to avoid repeating themselves. It's a win-win.
