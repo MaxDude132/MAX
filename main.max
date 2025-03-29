@@ -3,8 +3,8 @@
 -*
     This is a multiline comment
 
-    MAX is based on the idea that it is strongly typed, but type params should be used as little as possible. Everything should be clear,
-    while using as little keywords as possible. No keywords exist for function, class or variable, only types, builtins and some required keywords will be reserved.
+    MAX is based on the idea that it is strongly typed, but type params should only be used on code entrypoints: function parameters and external input. Everything should be clear,
+    while using as little keywords as possible. No keywords exist for function or variable, only types, builtins and some required keywords will be reserved.
     Even builtins should be kept to a minimum.
 
     MAX code should be elegant, simple and minimal in terms of keywords. 
@@ -16,30 +16,27 @@
     null does not exist in this language. If you do not know what you need yet, set a default value. Better yet, don't set anything you don't know yet.
 *-
 
-some_value = 0  -- This is fine because it can infer the type
-int some_typed_value = 0  -- You can also be more precise
-
-some_value = 0.0  -- Type becomes int | float
-some_typed_value = 0.0  -- TypeError, float is not compatible with int
+some_value = 0  -- This is fine because it can infer the type: int
+some_value = 0.0  -- Type becomes float, as int is more broad than float
 
 someFunction {  -- functions are defined without any keyword
     return 'some_value'
 }
 
-someFunctionWithParams: int param_1, string param_2 {  -- function params must be typed. The function can be typed, but the type will be inferred where possible. If inferring is impossible, it will give a TypeError
+someFunctionWithParams: int param_1, string param_2 {  -- function params must be typed. The function return cannot be typed, the type will be inferred.
     return param_1
 }
 
 
 someFunc: int param_1 {
-    return param_1 // 2
+    return param_1 // 2  -- As in Python, "//" means integer division.
 }
 
 class GreatClass {  -- A class is defined by the class keyword
     int some_value  -- This defines a value that the class will have. This value HAS to be given when the object is instantiated.
         -- If no default is given, the type is required.
-    int some_value_with_default = 0  -- This value has a default, and so it is not required to be passed at object instantiation.
-    shared int class_variable = 0  -- This is a shared variable. This means that all instances of the class will use the same variable.
+    some_value_with_default = 0  -- This value has a default, and so it is not required to be passed at object instantiation.
+    shared class_variable = 0  -- This is a shared variable. This means that all instances of the class will use the same variable.
 
     getSomeValue {
         return self.some_value * 2
@@ -72,7 +69,7 @@ ClassThatInherits: GreatClass {
         return super()
         -- would be equivalent
     }
-}  -- Note that multiple inheritance is not allowed. It might be added eventually, but that will complicate the next call.
+}
 
 
 someFunctionWithParams(param_1=2, param_2=1)
@@ -95,6 +92,7 @@ file.path -> imported_function => my_func, ImportedClass
     Default Types:
         int: integer numbers
         float: floating point numbers
+        char: one character
         string: multiple characters
         boolean: true or false
         list: immutable sequence of items, doubly linked
@@ -164,7 +162,7 @@ if some_value {
     Operators are:
         - == equals -> Returns a bool
         - + plus -> Returns an int, float or string
-        - - minus -> Returns an in or float
+        - - minus -> Returns an int or float
         - / divide -> Returns a float
         - // int divide -> Returns an int
         - and 
@@ -174,7 +172,7 @@ if some_value {
 
 -- CONTEXT MANAGERS
 
-context MyContext(): context_obj {
+context MyContext() -> context_obj {
     -- context_obj is available here
 }
 
@@ -183,6 +181,7 @@ context MyContext(): context_obj {
 enum MyEnum {
     SOME_VALUE,
     SOME_OTHER_VALUE,
+    SOME_VALUE_WITH_INTERNAL(int value),
 }
 
 -- Note: Since we do not allow passing None (or null), and to avoid people making a single Sentinel that they then use everywhere (which would defeat the purpose), 
