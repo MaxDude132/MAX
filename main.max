@@ -33,10 +33,8 @@ someFunc: int param_1 {
 }
 
 class GreatClass {  -- A class is defined by the class keyword
-    int some_value  -- This defines a value that the class will have. This value HAS to be given when the object is instantiated.
-        -- If no default is given, the type is required.
-    some_value_with_default = 0  -- This value has a default, and so it is not required to be passed at object instantiation.
-    shared class_variable = 0  -- This is a shared variable. This means that all instances of the class will use the same variable.
+    init: int some_value, int some_value_with_default = 0 {
+    }
 
     getSomeValue {
         return self.some_value * 2
