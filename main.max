@@ -69,12 +69,51 @@ ClassThatInherits: GreatClass {
     }
 }
 
+-* 
+    A note about inheritance:
+        In Python, super calls the next class in the MRO. This has always bugged me, as it means you only know at runtime what is going to be called, not at compile time.
+        In MAX, you cannot access your superclass's superclass without inheriting from it as well. Super will always call the calling class's parents in order (from left to right).
+        This might lead to unexpected behaviour if you are not aware of this rule. For example in the classical diamond inheritance problem, the problem is traversed this way:
+*-
+
+class Shape {
+    display {
+        return "Shape"
+    }
+}
+
+class Rectangle: Shape {
+    display {
+        return "Rectangle"
+    }
+}
+
+class Circle: Shape {
+    display {
+        return "Circle
+    }
+}
+
+class Cylinder: Rectangle, Circle {}
+
+-* 
+    If you look at this, you would expect a call to display() to return "Rectangle", and in this case you would be right. But if only Shape 
+        defined display, then it would be unreachable to Cylinder, but reachable from Rectangle and Square. This could be fixed by adding 
+        Shape to the inheritance of Cylinder.
+
+    Inheritance does not traverse to a class's grandparents. If that is the behaviour wanted, those grandparents have to be added.
+        This is done so that it is alway abvious which function will be called, and in which order the lookup will look. The only exception to 
+        this rule is super. Because super always has access to its parents, the parent will still have access to its own parents, and so a 
+        call coming from the child would still be brought to that child's grandparent through the super call on the parent. This is to ensure
+        continuity in method calls: A call to a method will always encur the same logic and lookups, whatever the situation may be. 
+*-
+
 
 someFunctionWithParams(param_1=2, param_2=1)
 GreatClass(some_value=2)  -- some_value = 2, some_value_with_default = 0
 my_obj = GreatClass(some_value=2, some_value_with_default=1)  -- some_value = 2, some_value_with_default = 1
-my_obj.some_value  -- my_obj.getSomeValue()
-my_obj.some_value = 2  -- my_obj.setSomeValue(2)
+
+-- I want to have an easy way to convert a field into a property that uses getters and setters. Maybe some field on variables themselves?
 
 
 -- Importing should be as simple as possible and take as little space as possible. It will look like this:
@@ -93,14 +132,8 @@ file.path -> imported_function => my_func, ImportedClass
         char: one character
         string: multiple characters
         boolean: true or false
-        list: immutable sequence of items, doubly linked
-        map: immutable mapping of items
-
-        All builtins are immutable and simply return a copy when you edit them.
-            This copy should be memory efficient and fast.
-            The caviat to this is that calling methods like append and insert
-                will automatically change the local variable. This will not affect
-                variables outside the current local scope (needs to be thought about more).
+        list: sequence of items, doubly linked
+        map: mapping of items
 *-
 
 -*
@@ -113,15 +146,12 @@ file.path -> imported_function => my_func, ImportedClass
     Builtin methods
         Builtin methods are what is required for classes to become usable through the default behaviour.
 
-        To customize the creation of new instance:
-            - new
-
         To run code during object initialization:
             - init
 
         To make a container object:
-            - iterate
-            - next (Only required if iterate returns self)
+            - iterate (returns an iterable structure, such as list or map)
+            - next (makes the structure iterable, by defining the logic of which item to return. Must return )
 
         To make comparable:
             - equals
@@ -187,6 +217,7 @@ enum MyEnum {
 --     the previous function (or method). This has the advantage of _forcing_ the coder to split things in smaller functions to avoid repeating themselves. It's a win-win.
 
 -*
+    IMPLEMENTATION IDEA
     An idea I have is to make async be part of the core of the language. For example, a for loop that does not modify any variable outside of the loop
         would run all iterations of the loop asynchronously. Similarly, function calls that do not depend on common variables would not await each other before running.
         This makes it easy to take advantage of asynchronous patterns, but means that populating a list would have 2 potential behaviour (for me to determine):
