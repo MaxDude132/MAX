@@ -16,24 +16,24 @@
     null does not exist in this language. If you do not know what you need yet, set a default value. Better yet, don't set anything you don't know yet.
 *-
 
-some_value = 0  -- This is fine because it can infer the type: int
-some_value = 0.0  -- Type becomes float, as int is more broad than float
+some_value = 0  -- This is fine because it can infer the type: Int
+some_value = 0.0  -- Type error, cannot convert the variable from Int to Float
 
 someFunction {  -- functions are defined without any keyword
     return 'some_value'
 }
 
-someFunctionWithParams: int param_1, string param_2 {  -- function params must be typed. The function return cannot be typed, the type will be inferred.
+someFunctionWithParams: Int param_1, String param_2 {  -- function params must be typed. The function return cannot be typed, the type will be inferred.
     return param_1
 }
 
 
-someFunc: int param_1 {
+someFunc: Int param_1 {
     return param_1 // 2  -- As in Python, "//" means integer division.
 }
 
 class GreatClass {  -- A class is defined by the class keyword
-    init: int some_value, int some_value_with_default = 0 {
+    init: Int some_value, Int some_value_with_default = 0 {
     }
 
     getSomeValue {
@@ -72,8 +72,7 @@ ClassThatInherits: GreatClass {
 -* 
     A note about inheritance:
         In Python, super calls the next class in the MRO. This has always bugged me, as it means you only know at runtime what is going to be called, not at compile time.
-        In MAX, you cannot access your superclass's superclass without inheriting from it as well. Super will always call the calling class's parents in order (from left to right).
-        This might lead to unexpected behaviour if you are not aware of this rule. For example in the classical diamond inheritance problem, the problem is traversed this way:
+        In MAX, you cannot access your superclass's superclass without inheriting from it as well. For example in the classical diamond inheritance problem, the problem is traversed this way:
 *-
 
 class Shape {
@@ -102,7 +101,7 @@ class Cylinder: Rectangle, Circle {}
         Shape to the inheritance of Cylinder.
 
     Inheritance does not traverse to a class's grandparents. If that is the behaviour wanted, those grandparents have to be added.
-        This is done so that it is alway abvious which function will be called, and in which order the lookup will look. The only exception to 
+        This is done so that it is alway obvious which function will be called, and in which order the lookup will look. The only exception to 
         this rule is super. Because super always has access to its parents, the parent will still have access to its own parents, and so a 
         call coming from the child would still be brought to that child's grandparent through the super call on the parent. This is to ensure
         continuity in method calls: A call to a method will always encur the same logic and lookups, whatever the situation may be. 
@@ -113,7 +112,8 @@ someFunctionWithParams(param_1=2, param_2=1)
 GreatClass(some_value=2)  -- some_value = 2, some_value_with_default = 0
 my_obj = GreatClass(some_value=2, some_value_with_default=1)  -- some_value = 2, some_value_with_default = 1
 
--- I want to have an easy way to convert a field into a property that uses getters and setters. Maybe some field on variables themselves?
+-- I want to have an easy way to convert a field into a property that uses getters and setters. 
+--    This will probably be done by adding `get` or `set` before a method with the same name as the variable.
 
 
 -- Importing should be as simple as possible and take as little space as possible. It will look like this:
@@ -127,19 +127,20 @@ file.path -> imported_function => my_func, ImportedClass
 
 -* 
     Default Types:
-        int: integer numbers
-        float: floating point numbers
-        char: one character
-        string: multiple characters
-        boolean: true or false
-        list: sequence of items, doubly linked
-        map: mapping of items
+        Int: integer numbers
+        Float: floating point numbers
+        String: multiple characters
+        Bool: true or false
+        List: sequence of items, doubly linked
+        Map: mapping of items
+        Pair: Coupling of 2 variables. Defined with -> or by calling Pair directly. This is what maps expect as arguments.
 *-
 
 -*
     Builtin functions
         iterate: Returns the object on which to call next to get the next item
-        next: Returns the next item. If no item can be found, returns the sentinel NO_ITEMS, which signals to stop the loop.
+        next: Returns the next item. If no item can be found, returns the sentinel NO_ITEMS, which signals to stop the loop. -- Not implemented yet
+        print: Prints the String representation of the object (calling toString)
 *-
 
 *- 
@@ -151,13 +152,21 @@ file.path -> imported_function => my_func, ImportedClass
 
         To make a container object:
             - iterate (returns an iterable structure, such as list or map)
-            - next (makes the structure iterable, by defining the logic of which item to return. Must return )
+            - next (makes the structure iterable, by defining the logic of which item to return. Must return a Next instance) -- Not implemented yet.
 
         To make comparable:
             - equals
             - greaterThan
+                - Note: All other comparisons use a combination of both equals and greaterThan to determine the equality.
 
-        To make a context manager:
+        To allow using operators:
+            - negate: allow using the `-` operator (unary)
+            - add: allow using the `+` operator
+            - substract: allow using the `-` operator
+            - multiply: allow using the `*` operator
+            - divide: allow using the `/` operator
+
+        To make a context manager (not implemented yet):
             - enter
             - exit
 *-
@@ -167,14 +176,16 @@ file.path -> imported_function => my_func, ImportedClass
 -- for loops should be kept simple, and always be iterating over a container object. Container objects are objects that define the `iterate` method.
 
 Container {
-    array<int> my_array
+    init: List<Int> my_array {
+        self.my_array = my_array
+    }
 
     iterate {
         return iterate(self.my_array)
     }
 }
 
-container = Container(array(1, 2, 3))
+container = Container(List(1, 2, 3))
 
 for item in container {
     -- do something
@@ -188,9 +199,9 @@ if some_value {
 
 -*
     Operators are:
-        - == equals -> Returns a bool
-        - + plus -> Returns an int, float or string
-        - - minus -> Returns an int or float
+        - == equals -> Returns a Bool
+        - + plus
+        - - minus
         - / divide -> Returns a float
         - // int divide -> Returns an int
         - and 
@@ -198,7 +209,7 @@ if some_value {
         - xor
 *-
 
--- CONTEXT MANAGERS
+-- CONTEXT MANAGERS  -- TODO
 
 context MyContext() -> context_obj {
     -- context_obj is available here
@@ -207,9 +218,10 @@ context MyContext() -> context_obj {
 -- ENUMS
 
 enum MyEnum {
-    SOME_VALUE,
-    SOME_OTHER_VALUE,
-    SOME_VALUE_WITH_INTERNAL(int value),
+    SOME_VALUE
+    SOME_OTHER_VALUE
+    SOME_VALUE_WITH_INTERNAL: Int value
+    SOME_VALUE_WITH_MULTIPLE_INTERNALS: Int value, String other_value
 }
 
 -- Note: Since we do not allow passing None (or null), and to avoid people making a single Sentinel that they then use everywhere (which would defeat the purpose), 
@@ -232,24 +244,24 @@ enum MyEnum {
     This can be visualized in this bit of code:
 *-
 
-result = array()
-for item in container {  -- Here, because the append is called in the loop, each iteration will be done synchronously.
+result = List()
+for item in container {  -- Here, because the add is called in the loop, each iteration will be done synchronously.
     val1 = item.val1
     val2 = item.val2  -- This attribute call will be done at the same time as the previous line, because they do not depend on one another (assuming one does not use the other in get_valx)
     val3 = val1 + val2  -- This line will await both val1 and val2, because those are its dependencies
-    array.append(val3)  -- This line will await val3
+    array.add(val3)  -- This line will await val3
 }
 
 result = array[]
-for item in container {  -- Here, because the append is called with the async parameter, each iteration of the loop will be done in its own thread (not clear yet how it will be done)
+for item in container {  -- Here, because the add is called with the async parameter, each iteration of the loop will be done in its own thread (not clear yet how it will be done)
     val1 = item.val1
     val2 = item.val2  -- This attribute call will be done at the same time as the previous line, because they do not depend on one another (assuming one does not use the other in get_valx)
     val3 = val1 + val2  -- This line will await both val1 and val2, because those are its dependencies
-    async array.append(val3)  -- This line will await val3
+    async array.add(val3)  -- This line will await val3
 }
 
 -- This means that there will be x * 2 threads at the same time, where x is the number of items in the container that is being iterated.
--- To make sure this is safe and does not hog too much memory, we should test this idea profoundly. There also needs to be a way to limit the number of threads, with a default that fits
+-- To make sure this is safe and does not hog too much memory, we should test this idea extensively. There also needs to be a way to limit the number of threads, with a default that fits
 --    the machine the code is run on. Let's also make sure that all this threading is not heavier than just running the code synchronously, in which case it should be avoided.
 -- IMPORTANT: async will not be in version 1, but it's an idea to keep in mind for future improvements.
 -- async loops should keep the order, so lines should be run in the same order every time. This will ensure that we keep the order as it would be expected if it was sync.
